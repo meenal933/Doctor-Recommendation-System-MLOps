@@ -10,6 +10,7 @@ pipeline {
         ANSIBLE_PLAYBOOK  = "Ansible/deploy.yml"
 
         KUBECONFIG = "/var/lib/jenkins/.kube/config"
+        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages {
@@ -24,31 +25,32 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker images..."
-                    sh 'docker build -t meenal933/bandit:latest ./main1'
-        sh 'docker build -t meenal933/speciality:latest ./main2'
-        sh 'docker build -t meenal933/frontend:latest .'
+                    sh "/Applications/Docker.app/Contents/Resources/bin/docker build -t ${BANDIT_IMAGE}:latest ./main1"
+                    sh "/Applications/Docker.app/Contents/Resources/bin/docker build -t ${SPECIALITY_IMAGE}:latest ./main2"
+                    sh "/Applications/Docker.app/Contents/Resources/bin/docker build -t ${FRONTEND_IMAGE}:latest ."
                 }
             }
         }
 
-     stage('Push Docker Images to DockerHub') {
-    steps {
-        script {
-            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                sh "docker push ${BANDIT_IMAGE}:latest"
-                sh "docker push ${SPECIALITY_IMAGE}:latest"
-                sh "docker push ${FRONTEND_IMAGE}:latest"
+        stage('Push Docker Images to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                                                  usernameVariable: 'DOCKER_USER',
+                                                  passwordVariable: 'DOCKER_PASS')]) {
+                    sh " login -u $DOCKER_USER -p $DOCKER_PASS"
+                    sh "/Applications/Docker.app/Contents/Resources/bin/docker push ${BANDIT_IMAGE}:latest"
+                    sh "/Applications/Docker.app/Contents/Resources/bin/docker push ${SPECIALITY_IMAGE}:latest"
+                    sh "/Applications/Docker.app/Contents/Resources/bin/docker push ${FRONTEND_IMAGE}:latest"
+                }
             }
         }
-    }
-}
 
         stage('Load Images into Minikube') {
             steps {
                 sh """
-                    minikube image load ${BANDIT_IMAGE}:latest
-                    minikube image load ${SPECIALITY_IMAGE}:latest
-                    minikube image load ${FRONTEND_IMAGE}:latest
+                    /opt/homebrew/bin/minikube image load ${BANDIT_IMAGE}:latest
+                    /opt/homebrew/bin/minikube image load ${SPECIALITY_IMAGE}:latest
+                    /opt/homebrew/bin/minikube load ${FRONTEND_IMAGE}:latest
                 """
             }
         }
@@ -66,11 +68,7 @@ pipeline {
     }
 
     post {
-        success {
-            echo "Deployment successful!"
-        }
-        failure {
-            echo "Deployment failed. Check logs above."
-        }
+        success { echo "Deployment successful!" }
+        failure { echo "Deployment failed. Check logs above." }
     }
 }
