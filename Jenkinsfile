@@ -33,17 +33,17 @@ pipeline {
         }
 
         stage('Push Docker Images to DockerHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                                                  usernameVariable: 'DOCKER_USER',
-                                                  passwordVariable: 'DOCKER_PASS')]) {
-                    sh " login -u $DOCKER_USER -p $DOCKER_PASS"
-                    sh "/Applications/Docker.app/Contents/Resources/bin/docker push ${BANDIT_IMAGE}:latest"
-                    sh "/Applications/Docker.app/Contents/Resources/bin/docker push ${SPECIALITY_IMAGE}:latest"
-                    sh "/Applications/Docker.app/Contents/Resources/bin/docker push ${FRONTEND_IMAGE}:latest"
-                }
-            }
+    steps {
+        script {
+            sh """
+            /Applications/Docker.app/Contents/Resources/bin/docker login -u meenal933 -p ${DOCKER_PASS}
+            /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/bandit:latest
+            /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/speciality:latest
+            /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/frontend:latest
+            """
         }
+    }
+}
 
         stage('Load Images into Minikube') {
             steps {
