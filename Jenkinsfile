@@ -24,9 +24,9 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker images..."
-                    sh "docker build -t ${BANDIT_IMAGE}:${BUILD_NUMBER} -t ${BANDIT_IMAGE}:latest ./main1"
-                    sh "docker build -t ${SPECIALITY_IMAGE}:${BUILD_NUMBER} -t ${SPECIALITY_IMAGE}:latest ./main2"
-                    sh "docker build -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} -t ${FRONTEND_IMAGE}:latest ."
+                    sh 'docker build -t meenal933/bandit:latest ./main1'
+        sh 'docker build -t meenal933/speciality:latest ./main2'
+        sh 'docker build -t meenal933/frontend:latest .'
                 }
             }
         }
