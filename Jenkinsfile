@@ -35,11 +35,11 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        sh "docker push ${BANDIT_IMAGE}:${BUILD_NUMBER}"
+                
                         sh "docker push ${BANDIT_IMAGE}:latest"
-                        sh "docker push ${SPECIALITY_IMAGE}:${BUILD_NUMBER}"
+                        
                         sh "docker push ${SPECIALITY_IMAGE}:latest"
-                        sh "docker push ${FRONTEND_IMAGE}:${BUILD_NUMBER}"
+                    \
                         sh "docker push ${FRONTEND_IMAGE}:latest"
                     }
                 }
