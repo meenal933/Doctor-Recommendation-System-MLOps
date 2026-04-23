@@ -52,7 +52,7 @@ pipeline {
                 sh """
                     /opt/homebrew/bin/minikube image load ${BANDIT_IMAGE}:latest
                     /opt/homebrew/bin/minikube image load ${SPECIALITY_IMAGE}:latest
-                    /opt/homebrew/bin/minikube load ${FRONTEND_IMAGE}:latest
+                    /opt/homebrew/bin/minikube image load ${FRONTEND_IMAGE}:latest
                 """
             }
         }
