@@ -31,16 +31,18 @@ pipeline {
             }
         }
 
-        stage('Push Docker Images to DockerHub') {
+     stage('Push Docker Images to DockerHub') {
     steps {
-        sh '''
-        echo "Logging into DockerHub..."
-        docker login -u meenal933 -p YOUR_DOCKER_TOKEN
-
-        docker push meenal933/bandit:latest
-        docker push meenal933/speciality:latest
-        docker push meenal933/frontend:latest
-        '''
+        script {
+            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                sh "docker push ${BANDIT_IMAGE}:${BUILD_NUMBER}"
+                sh "docker push ${BANDIT_IMAGE}:latest"
+                sh "docker push ${SPECIALITY_IMAGE}:${BUILD_NUMBER}"
+                sh "docker push ${SPECIALITY_IMAGE}:latest"
+                sh "docker push ${FRONTEND_IMAGE}:${BUILD_NUMBER}"
+                sh "docker push ${FRONTEND_IMAGE}:latest"
+            }
+        }
     }
 }
 
