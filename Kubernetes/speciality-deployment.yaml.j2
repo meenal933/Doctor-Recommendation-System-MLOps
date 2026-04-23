@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speciality-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: speciality
+  template:
+    metadata:
+      labels:
+        app: speciality
+    spec:
+      containers:
+      - name: speciality
+        image: {{ speciality_image }}:{{ speciality_tag }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: speciality
+spec:
+  selector:
+    app: speciality
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Recommendations</h1>
+        <h2>Input Symptoms:</h2>
+        <p>{{ symptoms }}</p>
+        <h2>Predicted Specialties:</h2>
+        <p>{{ specialties | join(", ") }}</p>
+        <h2>Doctor Recommendations:</h2>
+        {% for specialty, doctors in recommendations.items() %}
+            <h3>{{ specialty }}</h3>
+            {% if doctors is string %}
+                <p>{{ doctors }}</p>
+            {% else %}
+                <ul>
+                    {% for doctor in doctors %}
+                        <li>
+                            <strong>Name:</strong> {{ doctor.name }}<br>
+                            <strong>Rating:</strong> {{ doctor.rating }}<br>
+                            <strong>Experience:</strong> {{ doctor.experience }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>

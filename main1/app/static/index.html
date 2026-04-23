@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Recommendation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .doctor {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Recommendation System</h1>
+        <label for="specialists">Enter Specialists (comma-separated):</label>
+        <textarea id="specialists" rows="4" placeholder="e.g., Cardiologist, Pediatrician"></textarea>
+        <button onclick="getRecommendations()">Get Recommendations</button>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        async function getRecommendations() {
+            const specialistsInput = document.getElementById("specialists").value;
+            const specialists = specialistsInput.split(",").map(s => s.trim());
+
+            if (specialists.length === 0 || !specialists[0]) {
+                alert("Please enter at least one specialist.");
+                return;
+            }
+
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "<p>Loading...</p>";
+
+            try {
+                const response = await fetch("http://localhost:8000/recommend/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ specialists })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                displayResults(data.recommendations);
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        }
+
+        function displayResults(recommendations) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            for (const [specialist, doctors] of Object.entries(recommendations)) {
+                const specialistDiv = document.createElement("div");
+                specialistDiv.innerHTML = `<h3>${specialist}</h3>`;
+
+                if (Array.isArray(doctors)) {
+                    doctors.forEach(doctor => {
+                        const doctorDiv = document.createElement("div");
+                        doctorDiv.className = "doctor";
+                        doctorDiv.innerHTML = `
+                            <p><strong>Name:</strong> ${doctor.name}</p>
+                            <p><strong>Rating:</strong> ${doctor.rating.toFixed(2)}</p>
+                            <p><strong>Experience:</strong> ${doctor.experience.toFixed(2)} years</p>
+                        `;
+                        specialistDiv.appendChild(doctorDiv);
+                    });
+                } else {
+                    specialistDiv.innerHTML += `<p>${doctors}</p>`;
+                }
+
+                resultsDiv.appendChild(specialistDiv);
+            }
+        }
+    </script>
+</body>
+</html>

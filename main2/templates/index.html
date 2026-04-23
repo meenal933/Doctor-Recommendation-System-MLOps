@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Specialty Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+        }
+        button {
+            background: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4cae4c;
+        }
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Medical Specialty Predictor</h1>
+        <form id="symptomForm">
+            <textarea id="symptoms" placeholder="Describe your symptoms here..."></textarea>
+            <button type="submit">Predict</button>
+        </form>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        document.getElementById("symptomForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const symptoms = document.getElementById("symptoms").value;
+            const resultsDiv = document.getElementById("results");
+
+            // Clear previous results
+            resultsDiv.innerHTML = "";
+
+            // Show loading message
+            resultsDiv.innerHTML = "<p>Loading predictions...</p>";
+
+            fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ symptoms: symptoms })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear the loading message
+                resultsDiv.innerHTML = "";
+
+                // Append new results
+                resultsDiv.innerHTML = "<h2>Top Specialties:</h2>";
+                data.top_specialists.forEach(spec => {
+                    resultsDiv.innerHTML += `<p>${spec.speciality}: ${spec.score} score</p>`;
+                });
+            })
+            .catch(err => {
+                // Show error message
+                resultsDiv.innerHTML = "<p style='color:red;'>Error: Unable to get predictions. Please try again later.</p>";
+                console.error("Error:", err);
+            });
+        });
+    </script>
+</body>
+</html>

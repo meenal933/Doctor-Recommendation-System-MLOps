@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Specialty and Doctor Recommendation</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Medical Specialty Predictor</h1>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <form action="/process" method="post">
+            <textarea name="symptoms" placeholder="Describe your symptoms here..." required></textarea>
+            <button type="submit">Get Recommendations</button>
+        </form>
+    </div>
+</body>
+</html>

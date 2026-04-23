@@ -1,0 +1,10 @@
+fastapi==0.115.5
+uvicorn==0.32.1
+Flask==3.1.0
+Flask-Cors==5.0.0
+transformers==4.46.3
+torch==2.5.1
+pandas==2.2.3
+scikit-learn==1.5.2
+spacy==3.8.2
+numpy==2.0.2
