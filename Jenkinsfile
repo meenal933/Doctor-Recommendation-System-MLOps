@@ -34,13 +34,15 @@ pipeline {
 
         stage('Push Docker Images to DockerHub') {
     steps {
-        script {
-            sh """
-            /Applications/Docker.app/Contents/Resources/bin/docker login -u meenal933 -p ${DOCKER_PASS}
-            /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/bandit:latest
-            /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/speciality:latest
-            /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/frontend:latest
-            """
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                                          usernameVariable: 'DOCKER_USER',
+                                          passwordVariable: 'DOCKER_PASS')]) {
+            sh '''
+                echo "$DOCKER_PASS" | /Applications/Docker.app/Contents/Resources/bin/docker login -u "$DOCKER_USER" --password-stdin
+                /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/bandit:latest
+                /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/speciality:latest
+                /Applications/Docker.app/Contents/Resources/bin/docker push meenal933/frontend:latest
+            '''
         }
     }
 }
